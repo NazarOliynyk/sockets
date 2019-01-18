@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:xmlns:th="http://www.thymeleaf.org" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+
+    <title>Home</title>
+</head>
+<body>
+
+<button onclick="connect()">click here to connect</button>
+
+<input type="" id="name" />
+
+<button onclick="sendName()"> send message</button>
+
+<table id="messages"></table>
+<script>
+
+    function showMessage(message) {
+        $("#messages").append("<tr><td>" +message+"</td></tr>");
+    }
+    var stompClient = null;
+  function connect() {
+      var socket= new SockJS('/socketName');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function (frame) {
+          console.log("connected");
+      stompClient.subscribe('/chanelName/outPoint', function (outputMessage) {
+            console.log(outputMessage);
+           showMessage(JSON.parse(outputMessage.body).outMessage);
+      });
+      });
+  }
+
+  function sendName() {
+      var inputValue = $("#name").val();
+      console.log(inputValue);
+      var data = JSON.stringify({'message':inputValue});
+      stompClient.send("/allowDestinationPrefix/msg", {}, data);
+  }
+
+</script>
+
+</body>
+</html>
